@@ -163,40 +163,13 @@ bot.catch(async (err, ctx) => {
   );
 });
 
-// Start bot
+// Start bot - Always use polling (simpler, no webhook setup needed)
 async function startBot() {
   try {
-    if (config.nodeEnv === "production" && config.webhookUrl) {
-      // Use webhook in production
-      console.log("Starting bot with webhook...");
-      await bot.telegram.setWebhook(`${config.webhookUrl}/webhook`);
-
-      // Start Express server for webhook
-      const express = await import("express");
-      const app = express.default();
-
-      app.use(express.default.json());
-      app.post("/webhook", async (req, res) => {
-        try {
-          await bot.handleUpdate(req.body);
-          res.sendStatus(200);
-        } catch (error) {
-          console.error("Webhook error:", error);
-          res.sendStatus(200); // Always return 200 to Telegram
-        }
-      });
-
-      app.listen(config.port, () => {
-        console.log(`Bot webhook server running on port ${config.port}`);
-        console.log(`Webhook URL: ${config.webhookUrl}/webhook`);
-      });
-    } else {
-      // Use polling in development
-      console.log("Starting bot with polling...");
-      await bot.launch();
-      console.log("Bot is running!");
-      console.log("Press Ctrl+C to stop the bot");
-    }
+    console.log("Starting bot with polling...");
+    await bot.launch();
+    console.log("✅ Bot is running!");
+    console.log("Press Ctrl+C to stop the bot");
 
     // Graceful stop
     process.once("SIGINT", () => {

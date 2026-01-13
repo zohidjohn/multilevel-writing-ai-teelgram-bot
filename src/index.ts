@@ -37,6 +37,12 @@ bot.use(async (ctx, next) => {
   if (ctx.message && "text" in ctx.message) {
     const text = ctx.message.text.trim();
     if (text === config.authCode) {
+      if (!ctx.session) {
+        ctx.session = {
+          isAuthenticated: false,
+          currentMenu: undefined,
+        };
+      }
       ctx.session.isAuthenticated = true;
 
       // Delete the authentication message

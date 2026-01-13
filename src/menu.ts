@@ -12,7 +12,7 @@ export async function showMainMenu(ctx: BotContext) {
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("📋 Student List", "student_list")],
-  ]).resize();
+  ]);
 
   await editOrReplaceMessage(ctx, text, keyboard);
 
@@ -40,7 +40,7 @@ export async function showStudentList(ctx: BotContext) {
       [Markup.button.callback("✏️ Edit Student", "edit_student")],
       [Markup.button.callback("🗑️ Delete Student", "delete_student")],
       [Markup.button.callback("🔙 Back to Main Menu", "main_menu")],
-    ]).resize();
+    ]);
 
     await editOrReplaceMessage(ctx, text, keyboard);
 
@@ -65,7 +65,7 @@ export async function showAddStudentPrompt(ctx: BotContext) {
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("🔙 Back", "student_list")],
-  ]).resize();
+  ]);
 
   await editOrReplaceMessage(ctx, text, keyboard);
 
@@ -80,7 +80,7 @@ export async function showEditStudentPrompt(ctx: BotContext) {
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("🔙 Back", "student_list")],
-  ]).resize();
+  ]);
 
   await editOrReplaceMessage(ctx, text, keyboard);
 
@@ -95,7 +95,7 @@ export async function showDeleteStudentPrompt(ctx: BotContext) {
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("🔙 Back", "student_list")],
-  ]).resize();
+  ]);
 
   await editOrReplaceMessage(ctx, text, keyboard);
 
@@ -109,7 +109,7 @@ export async function showNewEmailPrompt(ctx: BotContext, oldEmail: string) {
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("🔙 Back", "student_list")],
-  ]).resize();
+  ]);
 
   await editOrReplaceMessage(ctx, text, keyboard);
 

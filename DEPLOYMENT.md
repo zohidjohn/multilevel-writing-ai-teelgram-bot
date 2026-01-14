@@ -25,19 +25,23 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ### Option 1: Using Dokploy UI
 
 1. **Login to Dokploy**
+
    - Access your Dokploy dashboard
 
 2. **Create New Application**
+
    - Click "New Application" or "Add Project"
    - Choose "Docker" or "Git Repository"
 
 3. **Configure Git Repository (if using Git)**
+
    - Repository URL: `https://github.com/zohidjohn/multilevel-writing-ai-teelgram-bot.git`
    - Branch: `main`
    - Build Command: `npm run build`
    - Start Command: `npm start`
 
 4. **Set Environment Variables**
+
    - Add all required environment variables from `.env.example`
    - Make sure to set `BOT_TOKEN`, `AUTH_CODE`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY`
 
@@ -49,23 +53,27 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ### Option 2: Using Docker Compose (Manual)
 
 1. **SSH into your VPS**
+
    ```bash
    ssh user@your-vps-ip
    ```
 
 2. **Clone the repository**
+
    ```bash
    git clone https://github.com/zohidjohn/multilevel-writing-ai-teelgram-bot.git
    cd multilevel-writing-ai-teelgram-bot
    ```
 
 3. **Create `.env` file**
+
    ```bash
    cp .env.example .env
    nano .env  # Edit with your credentials
    ```
 
 4. **Build and run with Docker Compose**
+
    ```bash
    docker-compose up -d --build
    ```
@@ -78,6 +86,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ### Option 3: Using Dockerfile directly
 
 1. **Build the image**
+
    ```bash
    docker build -t telegram-admin-bot .
    ```
@@ -94,11 +103,13 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ## Verifying Deployment
 
 1. **Check container status**
+
    ```bash
    docker ps | grep telegram-bot
    ```
 
 2. **View logs**
+
    ```bash
    docker logs -f telegram-admin-bot
    ```
@@ -113,15 +124,18 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ## Troubleshooting
 
 ### Bot not responding
+
 - Check logs: `docker logs telegram-admin-bot`
 - Verify `BOT_TOKEN` is correct
 - Ensure bot is not rate-limited
 
 ### Connection errors
+
 - Verify `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are correct
 - Check network connectivity from VPS
 
 ### Build failures
+
 - Ensure Node.js 20+ is available in Docker
 - Check that all dependencies are in `package.json`
 - Review build logs for specific errors
@@ -129,6 +143,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ## Updating the Bot
 
 1. **Pull latest changes**
+
    ```bash
    git pull origin main
    ```
@@ -151,4 +166,3 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 - Use strong `AUTH_CODE` in production
 - Keep `SUPABASE_SERVICE_ROLE_KEY` secret
 - Regularly update dependencies
-

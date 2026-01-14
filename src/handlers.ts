@@ -53,10 +53,9 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
       });
     }
 
-    // Show success message, then update to student list
+    // Show success message briefly, then show student list
     await editOrReplaceMessage(ctx, responseText);
-    // Small delay to show success message briefly
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     await showStudentList(ctx);
   } catch (error) {
     await editOrReplaceMessage(
@@ -89,13 +88,8 @@ export async function handleEditStudent(ctx: BotContext, text: string) {
     // Second step: update with new email
     try {
       await updateStudentEmail(ctx.session.editingStudentEmail, email);
-      await editOrReplaceMessage(
-        ctx,
-        `✅ Student email updated successfully!\n\nOld: \`${ctx.session.editingStudentEmail}\`\nNew: \`${email}\``
-      );
       ctx.session.editingStudentEmail = undefined;
-      // Small delay to show success message briefly
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Show student list immediately so emails can be copied
       await showStudentList(ctx);
     } catch (error) {
       await editOrReplaceMessage(
@@ -123,12 +117,7 @@ export async function handleDeleteStudent(ctx: BotContext, text: string) {
 
   try {
     await deleteStudent(email);
-    await editOrReplaceMessage(
-      ctx,
-      `✅ Student \`${email}\` deleted successfully!`
-    );
-    // Small delay to show success message briefly
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Show student list immediately so emails can be copied
     await showStudentList(ctx);
   } catch (error) {
     await editOrReplaceMessage(

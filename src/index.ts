@@ -52,27 +52,18 @@ bot.use(async (ctx, next) => {
         // Ignore if message can't be deleted
       }
 
-      // Edit the last bot message (auth prompt) to show success, then show menu
-      await editOrReplaceMessage(
-        ctx,
-        "✅ Authentication successful! Welcome to Multi-level Writing AI Admin Bot."
-      );
-      // Small delay to show success message briefly
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // Go straight to main menu after authentication
       await showMainMenu(ctx);
       return;
     }
   }
 
-  // If not authenticated, show auth prompt
+  // If not authenticated, silently ignore non-command messages
   if (
     ctx.message &&
     "text" in ctx.message &&
     !ctx.message.text.startsWith("/")
   ) {
-    await ctx.reply(
-      "🔒 Please authenticate first by sending the authentication code.\n\nType /start to see instructions."
-    );
     return;
   }
 
@@ -86,10 +77,9 @@ bot.command("start", async (ctx) => {
   if (ctx.session.isAuthenticated) {
     await showMainMenu(ctx);
   } else {
+    // Only show auth prompt if not already authenticated
     await ctx.reply(
-      "🔒 *Authentication Required*\n\n" +
-        "Please send the authentication code to access the admin panel.\n\n" +
-        "Type /help for more information.",
+      "Please send the authentication code to access the admin panel.",
       { parse_mode: "Markdown" }
     );
   }

@@ -5,7 +5,7 @@ import {
   deleteStudent,
   updateStudentEmail,
 } from "./supabase.js";
-import { editOrReplaceMessage, escapeMarkdown } from "./utils.js";
+import { editOrReplaceMessage, editOrReplaceMessagePlain, escapeMarkdown } from "./utils.js";
 
 export async function showMainMenu(ctx: BotContext) {
   const text = "🤖 *Multi-level Writing AI*\n\nSelect an option:";
@@ -25,13 +25,14 @@ export async function showStudentList(ctx: BotContext) {
   try {
     const students = await getAllStudents();
 
-    let text = "📋 *Student List*\n\n";
+    // Use plain text for the list so emails display normally (like Gmail)
+    let text = "📋 Student List\n\n";
 
     if (students.length === 0) {
       text += "No students found.";
     } else {
       students.forEach((student, index) => {
-        text += `${index + 1}\\. ${escapeMarkdown(student.email)}\n`;
+        text += `${index + 1}. ${student.email}\n`;
       });
     }
 
@@ -42,7 +43,8 @@ export async function showStudentList(ctx: BotContext) {
       [Markup.button.callback("🔙 Back to Main Menu", "main_menu")],
     ]);
 
-    await editOrReplaceMessage(ctx, text, keyboard);
+    // Use plain text mode so emails display normally without escaping
+    await editOrReplaceMessagePlain(ctx, text, keyboard);
 
     if (ctx.session) {
       ctx.session.currentMenu = "studentList";

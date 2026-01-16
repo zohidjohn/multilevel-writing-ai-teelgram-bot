@@ -30,9 +30,11 @@ RUN chown -R nodejs:nodejs /app
 # Switch to non-root user
 USER nodejs
 
-# Health check (polling mode doesn't need ports)
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node -e "console.log('Bot is running')" || exit 1
+# Health check - disabled for polling mode
+# Polling bots don't expose ports, so healthcheck is not applicable
+# The container will restart if the process exits
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+#   CMD node -e "process.exit(0)"
 
 # Start the bot
 CMD ["npm", "start"]

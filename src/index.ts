@@ -182,24 +182,47 @@ async function startBot() {
   try {
     console.log("🤖 Starting Telegram bot...");
     console.log("📡 Using polling mode (no webhook needed)");
+    console.log("🔧 Environment check:");
+    console.log("  - BOT_TOKEN:", config.botToken ? "✅ Set" : "❌ Missing");
+    console.log("  - SUPABASE_URL:", config.supabaseUrl ? "✅ Set" : "❌ Missing");
+    console.log("  - SUPABASE_SERVICE_ROLE_KEY:", config.supabaseServiceRoleKey ? "✅ Set" : "❌ Missing");
+    
     await bot.launch();
     console.log("✅ Bot is running and listening for messages!");
     console.log("Press Ctrl+C to stop the bot");
 
     // Graceful stop
     process.once("SIGINT", () => {
-      console.log("Stopping bot...");
+      console.log("Stopping bot (SIGINT)...");
       bot.stop("SIGINT");
       process.exit(0);
     });
     process.once("SIGTERM", () => {
-      console.log("Stopping bot...");
+      console.log("Stopping bot (SIGTERM)...");
       bot.stop("SIGTERM");
       process.exit(0);
     });
+
+    // Keep process alive and handle uncaught errors
+    process.on("uncaughtException", (error) => {
+      console.error("❌ Uncaught Exception:", error);
+      // Don't exit, try to keep running
+    });
+
+    process.on("unhandledRejection", (reason, promise) => {
+      console.error("❌ Unhandled Rejection at:", promise, "reason:", reason);
+      // Don't exit, try to keep running
+    });
   } catch (error) {
-    console.error("Failed to start bot:", error);
-    process.exit(1);
+    console.error("❌ Failed to start bot:", error);
+    if (error instanceof Error) {
+      console.error("❌ Error message:", error.message);
+      console.error("❌ Error stack:", error.stack);
+    }
+    // Wait a bit before exiting to see logs
+    setTimeout(() => {
+      process.exit(1);
+    }, 5000);
   }
 }
 

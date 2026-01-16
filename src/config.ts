@@ -9,11 +9,23 @@ export const config = {
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
 };
 
-// Validate required environment variables
+// Validate required environment variables with better error messages
 if (!config.botToken) {
-  throw new Error("BOT_TOKEN is required");
+  console.error("❌ ERROR: BOT_TOKEN environment variable is required but not set");
+  console.error("   Please set BOT_TOKEN in your environment variables");
+  process.exit(1);
 }
 
-if (!config.supabaseUrl || !config.supabaseServiceRoleKey) {
-  throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
+if (!config.supabaseUrl) {
+  console.error("❌ ERROR: SUPABASE_URL environment variable is required but not set");
+  console.error("   Please set SUPABASE_URL in your environment variables");
+  process.exit(1);
 }
+
+if (!config.supabaseServiceRoleKey) {
+  console.error("❌ ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required but not set");
+  console.error("   Please set SUPABASE_SERVICE_ROLE_KEY in your environment variables");
+  process.exit(1);
+}
+
+console.log("✅ All required environment variables are set");

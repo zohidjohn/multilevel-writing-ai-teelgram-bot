@@ -29,18 +29,45 @@ export function escapeMarkdown(text: string): string {
 
 /**
  * Always tries to edit the last message. If editing fails, deletes the old message and sends a new one.
+ * Automatically falls back to plain text if Markdown parsing fails.
  */
 export async function editOrReplaceMessage(
   ctx: BotContext,
   text: string,
   keyboard?: ReturnType<typeof Markup.inlineKeyboard>
 ) {
+  const sendWithFallback = async (
+    sendFn: (options: any) => Promise<any>,
+    plainSendFn: (options: any) => Promise<any>
+  ): Promise<any> => {
+    try {
+      return await sendFn({
+        ...(keyboard || {}),
+        parse_mode: "Markdown",
+      });
+    } catch (error: any) {
+      // If Markdown parsing fails, retry without Markdown (plain text)
+      if (
+        error?.response?.description?.includes("can't parse entities") ||
+        error?.response?.description?.includes("Bad Request") ||
+        error?.message?.includes("can't parse entities")
+      ) {
+        // Retry without parse_mode (plain text)
+        return await plainSendFn({
+          ...(keyboard || {}),
+          // No parse_mode
+        });
+      }
+      throw error;
+    }
+  };
+
   if (!ctx.session || !ctx.chat) {
     // Fallback if no session or chat
-    const message = await ctx.reply(text, {
-      ...(keyboard || {}),
-      parse_mode: "Markdown",
-    });
+    const message = await sendWithFallback(
+      (options) => ctx.reply(text, options),
+      (options) => ctx.reply(text, options)
+    );
     if (ctx.session) {
       ctx.session.lastMessageId = message.message_id;
     }
@@ -50,15 +77,23 @@ export async function editOrReplaceMessage(
   try {
     if (ctx.session.lastMessageId) {
       // Try to edit the existing message
-      await ctx.telegram.editMessageText(
-        ctx.chat.id,
-        ctx.session.lastMessageId,
-        undefined,
-        text,
-        {
-          ...(keyboard || {}),
-          parse_mode: "Markdown",
-        }
+      await sendWithFallback(
+        (options) =>
+          ctx.telegram.editMessageText(
+            ctx.chat!.id,
+            ctx.session!.lastMessageId!,
+            undefined,
+            text,
+            options
+          ),
+        (options) =>
+          ctx.telegram.editMessageText(
+            ctx.chat!.id,
+            ctx.session!.lastMessageId!,
+            undefined,
+            text,
+            options
+          )
       );
       // Successfully edited, no need to update lastMessageId
       return;
@@ -78,9 +113,9 @@ export async function editOrReplaceMessage(
   }
 
   // Send new message (either because there was no lastMessageId or editing failed)
-  const message = await ctx.reply(text, {
-    ...(keyboard || {}),
-    parse_mode: "Markdown",
-  });
+  const message = await sendWithFallback(
+    (options) => ctx.reply(text, options),
+    (options) => ctx.reply(text, options)
+  );
   ctx.session.lastMessageId = message.message_id;
 }

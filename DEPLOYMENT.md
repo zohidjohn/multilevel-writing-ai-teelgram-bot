@@ -155,6 +155,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 ### Build failures
 
 - **"failed to read dockerfile: open code: no such file or directory"**
+
   - This error means Dokploy is looking for Dockerfile in the wrong path
   - **Fix:** Go to "Build Type" section → Select "Dockerfile" → Make sure "Dockerfile Path" is empty or set to `Dockerfile`
   - **Fix:** Verify "Build Path" is set to `/` (root of repository)

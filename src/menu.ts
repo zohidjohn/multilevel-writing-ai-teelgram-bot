@@ -5,7 +5,7 @@ import {
   deleteStudent,
   updateStudentEmail,
 } from "./supabase.js";
-import { editOrReplaceMessage } from "./utils.js";
+import { editOrReplaceMessage, escapeMarkdown } from "./utils.js";
 
 export async function showMainMenu(ctx: BotContext) {
   const text = "🤖 *Multi-level Writing AI*\n\nSelect an option:";
@@ -31,7 +31,7 @@ export async function showStudentList(ctx: BotContext) {
       text += "No students found.";
     } else {
       students.forEach((student, index) => {
-        text += `${index + 1}. ${student.email}\n`;
+        text += `${index + 1}\\. ${escapeMarkdown(student.email)}\n`;
       });
     }
 
@@ -48,19 +48,19 @@ export async function showStudentList(ctx: BotContext) {
       ctx.session.currentMenu = "studentList";
     }
   } catch (error) {
-    const errorText = `❌ Error: ${
-      error instanceof Error ? error.message : "Failed to fetch students"
-    }`;
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch students";
+    const errorText = `❌ Error: ${escapeMarkdown(errorMessage)}`;
     await editOrReplaceMessage(ctx, errorText);
   }
 }
 
 export async function showAddStudentPrompt(ctx: BotContext) {
   const text =
-    "➕ *Add Student*\n\nEnter email address(es):\n\n" +
+    "➕ *Add Student*\n\nEnter email address\\(es\\):\n\n" +
     "• For single student: Enter one email\n" +
     "• For bulk: Enter multiple emails separated by commas\n\n" +
-    "Example: `student1@example.com, student2@example.com`\n\n" +
+    "Example: `student1@example\\.com, student2@example\\.com`\n\n" +
     "Type /cancel to cancel.";
 
   const keyboard = Markup.inlineKeyboard([
@@ -105,7 +105,7 @@ export async function showDeleteStudentPrompt(ctx: BotContext) {
 }
 
 export async function showNewEmailPrompt(ctx: BotContext, oldEmail: string) {
-  const text = `✏️ *Edit Student*\n\nCurrent email: \`${oldEmail}\`\n\nEnter the new email address:\n\nType /cancel to cancel.`;
+  const text = `✏️ *Edit Student*\n\nCurrent email: \`${escapeMarkdown(oldEmail)}\`\n\nEnter the new email address:\n\nType /cancel to cancel.`;
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("🔙 Back", "student_list")],

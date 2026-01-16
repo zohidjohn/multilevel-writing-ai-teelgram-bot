@@ -2,6 +2,32 @@ import { BotContext } from "./types.js";
 import { Markup } from "telegraf";
 
 /**
+ * Escapes special Markdown characters to prevent parsing errors
+ */
+export function escapeMarkdown(text: string): string {
+  // Escape special Markdown characters: _ * [ ] ( ) ` ~ > # + - = | { } . !
+  return text
+    .replace(/\_/g, "\\_")
+    .replace(/\*/g, "\\*")
+    .replace(/\[/g, "\\[")
+    .replace(/\]/g, "\\]")
+    .replace(/\(/g, "\\(")
+    .replace(/\)/g, "\\)")
+    .replace(/\`/g, "\\`")
+    .replace(/\~/g, "\\~")
+    .replace(/\>/g, "\\>")
+    .replace(/\#/g, "\\#")
+    .replace(/\+/g, "\\+")
+    .replace(/\-/g, "\\-")
+    .replace(/\=/g, "\\=")
+    .replace(/\|/g, "\\|")
+    .replace(/\{/g, "\\{")
+    .replace(/\}/g, "\\}")
+    .replace(/\./g, "\\.")
+    .replace(/\!/g, "\\!");
+}
+
+/**
  * Always tries to edit the last message. If editing fails, deletes the old message and sends a new one.
  */
 export async function editOrReplaceMessage(

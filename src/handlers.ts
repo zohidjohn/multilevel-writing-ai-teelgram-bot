@@ -8,7 +8,7 @@ import {
   showDeleteStudentPrompt,
   showNewEmailPrompt,
 } from "./menu.js";
-import { editOrReplaceMessage } from "./utils.js";
+import { editOrReplaceMessage, escapeMarkdown } from "./utils.js";
 
 export async function handleAddStudent(ctx: BotContext, text: string) {
   if (!ctx.session) return;
@@ -37,19 +37,19 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
   try {
     const result = await addStudents(emails);
 
-    let responseText = "✅ *Student(s) Added*\n\n";
+    let responseText = "✅ *Student\\(s\\) Added*\n\n";
 
     if (result.success.length > 0) {
       responseText += `*Successfully added:*\n`;
       result.success.forEach((student) => {
-        responseText += `• ${student.email}\n`;
+        responseText += `• ${escapeMarkdown(student.email)}\n`;
       });
     }
 
     if (result.errors.length > 0) {
       responseText += `\n*Errors:*\n`;
       result.errors.forEach((error) => {
-        responseText += `• ${error}\n`;
+        responseText += `• ${escapeMarkdown(error)}\n`;
       });
     }
 
@@ -58,11 +58,11 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
     await new Promise((resolve) => setTimeout(resolve, 500));
     await showStudentList(ctx);
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to add students";
     await editOrReplaceMessage(
       ctx,
-      `❌ Error: ${
-        error instanceof Error ? error.message : "Failed to add students"
-      }`
+      `❌ Error: ${escapeMarkdown(errorMessage)}`
     );
     await showAddStudentPrompt(ctx);
   }
@@ -92,11 +92,11 @@ export async function handleEditStudent(ctx: BotContext, text: string) {
       // Show student list immediately so emails can be copied
       await showStudentList(ctx);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update student";
       await editOrReplaceMessage(
         ctx,
-        `❌ Error: ${
-          error instanceof Error ? error.message : "Failed to update student"
-        }`
+        `❌ Error: ${escapeMarkdown(errorMessage)}`
       );
       await showEditStudentPrompt(ctx);
     }
@@ -120,11 +120,11 @@ export async function handleDeleteStudent(ctx: BotContext, text: string) {
     // Show student list immediately so emails can be copied
     await showStudentList(ctx);
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to delete student";
     await editOrReplaceMessage(
       ctx,
-      `❌ Error: ${
-        error instanceof Error ? error.message : "Failed to delete student"
-      }`
+      `❌ Error: ${escapeMarkdown(errorMessage)}`
     );
     await showDeleteStudentPrompt(ctx);
   }

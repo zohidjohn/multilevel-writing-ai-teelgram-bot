@@ -49,13 +49,16 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
   }
 
   try {
-    console.log("[DEBUG] Calling addStudents with emails:", JSON.stringify(emails));
+    console.log(
+      "[DEBUG] Calling addStudents with emails:",
+      JSON.stringify(emails)
+    );
     const result = await addStudents(emails);
     console.log("[DEBUG] addStudents result:", {
       successCount: result.success.length,
       errorCount: result.errors.length,
-      success: result.success.map(s => s.email),
-      errors: result.errors
+      success: result.success.map((s) => s.email),
+      errors: result.errors,
     });
 
     let responseText = "✅ *Student\\(s\\) Added*\n\n";
@@ -74,18 +77,24 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
       });
     }
 
-    console.log("[DEBUG] Response text prepared:", responseText.substring(0, 100) + "...");
+    console.log(
+      "[DEBUG] Response text prepared:",
+      responseText.substring(0, 100) + "..."
+    );
     console.log("[DEBUG] Sending success message");
-    
+
     // Show success message briefly, then show student list
     await editOrReplaceMessage(ctx, responseText);
     await new Promise((resolve) => setTimeout(resolve, 500));
     console.log("[DEBUG] Showing student list");
-    await showStudentList(ctx);
+    await showStudentList(ctx, 0);
     console.log("[DEBUG] handleAddStudent completed successfully");
   } catch (error) {
     console.error("[DEBUG] Error in handleAddStudent:", error);
-    console.error("[DEBUG] Error stack:", error instanceof Error ? error.stack : "No stack");
+    console.error(
+      "[DEBUG] Error stack:",
+      error instanceof Error ? error.stack : "No stack"
+    );
     const errorMessage =
       error instanceof Error ? error.message : "Failed to add students";
     console.log("[DEBUG] Sending error message to user");
@@ -118,8 +127,8 @@ export async function handleEditStudent(ctx: BotContext, text: string) {
     try {
       await updateStudentEmail(ctx.session.editingStudentEmail, email);
       ctx.session.editingStudentEmail = undefined;
-      // Show student list immediately so emails can be copied
-      await showStudentList(ctx);
+      // Show student list immediately so emails can be copied (reset to page 0)
+      await showStudentList(ctx, 0);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to update student";
@@ -146,8 +155,8 @@ export async function handleDeleteStudent(ctx: BotContext, text: string) {
 
   try {
     await deleteStudent(email);
-    // Show student list immediately so emails can be copied
-    await showStudentList(ctx);
+    // Show student list immediately so emails can be copied (reset to page 0)
+    await showStudentList(ctx, 0);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to delete student";
@@ -168,12 +177,21 @@ export async function handleCallbackQuery(ctx: BotContext) {
   // Answer callback query to remove loading state
   await ctx.answerCbQuery();
 
+  // Handle pagination for student list
+  if (data.startsWith("student_list_page_")) {
+    const page = parseInt(data.replace("student_list_page_", ""), 10);
+    if (!isNaN(page)) {
+      await showStudentList(ctx, page);
+      return;
+    }
+  }
+
   switch (data) {
     case "main_menu":
       await showMainMenu(ctx);
       break;
     case "student_list":
-      await showStudentList(ctx);
+      await showStudentList(ctx, 0);
       break;
     case "add_student":
       await showAddStudentPrompt(ctx);

@@ -10,6 +10,7 @@ export interface SessionData {
     | "deleteStudent";
   editingStudentEmail?: string;
   lastMessageId?: number;
+  studentListPage?: number; // Current page for student list pagination
 }
 
 export type BotContext = Context & {

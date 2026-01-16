@@ -31,24 +31,42 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 2. **Create New Application**
 
    - Click "New Application" or "Add Project"
-   - Choose "Docker" or "Git Repository"
+   - Choose "Git Repository" (GitHub)
 
-3. **Configure Git Repository (if using Git)**
+3. **Configure Git Repository**
 
-   - Repository URL: `https://github.com/zohidjohn/multilevel-writing-ai-teelgram-bot.git`
-   - Branch: `main`
-   - Build Command: `npm run build`
-   - Start Command: `npm start`
+   - **Provider:** Select "GitHub"
+   - **Github Account:** Select or add your GitHub account
+   - **Repository:** `multilevel-writing-ai-teelgram-bot`
+   - **Branch:** `main`
+   - **Build Path:** `/` (root of repository - this is CRITICAL!)
+   - **Trigger Type:** "On Push" (optional)
+   - Click "Save" to save repository settings
 
-4. **Set Environment Variables**
+4. **Configure Build Type**
 
-   - Add all required environment variables from `.env.example`
-   - Make sure to set `BOT_TOKEN`, `AUTH_CODE`, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY`
+   - Go to the "Build Type" section
+   - Select **"Dockerfile"** as the build type
+   - **Dockerfile Path:** Leave empty or set to `Dockerfile` (should be at root)
+   - **Dockerfile Location:** Should be empty or `./Dockerfile`
+   - **Build Context:** Should be `/` (root)
 
-5. **Deploy**
-   - Click "Deploy" or "Save"
+5. **Set Environment Variables**
+
+   - Go to the "Environment" tab
+   - Add all required environment variables:
+     ```
+     BOT_TOKEN=your_telegram_bot_token
+     AUTH_CODE=D0h8596l^^MNiw
+     SUPABASE_URL=your_supabase_url
+     SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+     ```
+
+6. **Deploy**
+   - Click "Deploy" button
    - Wait for the build to complete
    - Check logs to ensure the bot started successfully
+   - You should see: "🤖 Starting Telegram bot..." and "✅ Bot is running and listening for messages!"
 
 ### Option 2: Using Docker Compose (Manual)
 
@@ -136,9 +154,16 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
 ### Build failures
 
+- **"failed to read dockerfile: open code: no such file or directory"**
+  - This error means Dokploy is looking for Dockerfile in the wrong path
+  - **Fix:** Go to "Build Type" section → Select "Dockerfile" → Make sure "Dockerfile Path" is empty or set to `Dockerfile`
+  - **Fix:** Verify "Build Path" is set to `/` (root of repository)
+  - The Dockerfile must be at the root of the repository
+
 - Ensure Node.js 20+ is available in Docker
 - Check that all dependencies are in `package.json`
 - Review build logs for specific errors
+- Verify the repository structure matches GitHub (Dockerfile should be at root)
 
 ## Updating the Bot
 

@@ -48,26 +48,23 @@ Press Ctrl+C to stop the bot
 4. You should see the main menu appear
 5. Try adding a student by clicking "Student List" → "Add Student"
 
-## 5. Production Setup (Webhook)
+## 5. Production Setup
 
 When deploying to production:
 
-1. Set environment variables:
-
-   ```env
-   NODE_ENV=production
-   WEBHOOK_URL=https://your-domain.com
-   PORT=3000
-   ```
-
-2. Build and start:
+1. Build the bot:
 
    ```bash
    npm run build
-   npm run start:prod
    ```
 
-3. Make sure your server is accessible at `https://your-domain.com/webhook`
+2. Start the bot:
+
+   ```bash
+   npm start
+   ```
+
+   The bot uses polling mode, so no webhook setup is needed. Just make sure the bot process stays running (use PM2, systemd, or Docker).
 
 ## Troubleshooting
 

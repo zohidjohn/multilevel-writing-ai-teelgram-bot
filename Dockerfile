@@ -30,10 +30,7 @@ RUN chown -R nodejs:nodejs /app
 # Switch to non-root user
 USER nodejs
 
-# Expose port (not needed for polling, but good practice)
-EXPOSE 3000
-
-# Health check
+# Health check (polling mode doesn't need ports)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD node -e "console.log('Bot is running')" || exit 1
 

@@ -10,8 +10,7 @@ A Telegram bot for managing students in the Multi-level Writing AI platform. Thi
 - ✏️ Edit student emails
 - 🗑️ Delete students
 - 🔄 Message editing (no message clutter)
-- 🌐 Webhook support for production
-- 🔄 Polling for local development
+- 🔄 Polling mode (simple, no webhook setup needed)
 
 ## Setup
 
@@ -36,12 +35,6 @@ Required environment variables:
 - `SUPABASE_URL` - Your Supabase project URL
 - `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key (required to bypass RLS)
 
-Optional for production:
-
-- `WEBHOOK_URL` - Your webhook URL (e.g., `https://your-domain.com`)
-- `PORT` - Port for webhook server (default: 3000)
-- `NODE_ENV` - Set to `production` for webhook mode
-
 ### 3. Get Supabase Credentials
 
 1. Go to your Supabase project dashboard
@@ -51,17 +44,17 @@ Optional for production:
 
 ### 4. Run the Bot
 
-**Development (Polling):**
+**Development:**
 
 ```bash
 npm run dev
 ```
 
-**Production (Webhook):**
+**Production:**
 
 ```bash
 npm run build
-npm run start:prod
+npm start
 ```
 
 ## Usage
@@ -120,11 +113,10 @@ telegram-admin-bot/
 - Check that the `allowed_users` table exists in your Supabase database
 - Ensure the service role key has proper permissions
 
-### Webhook not working
+### Bot not connecting
 
-- Make sure `WEBHOOK_URL` is publicly accessible
-- Verify the webhook endpoint is `/webhook`
-- Check that SSL certificate is valid (required by Telegram)
+- Verify the bot is using polling mode (check console for "Starting bot with polling...")
+- Ensure `BOT_TOKEN` is valid and the bot is not already running elsewhere
 
 ## License
 

@@ -162,9 +162,10 @@ bot.catch(async (err, ctx) => {
 // Start bot - Always use polling (simpler, no webhook setup needed)
 async function startBot() {
   try {
-    console.log("Starting bot with polling...");
+    console.log("🤖 Starting Telegram bot...");
+    console.log("📡 Using polling mode (no webhook needed)");
     await bot.launch();
-    console.log("✅ Bot is running!");
+    console.log("✅ Bot is running and listening for messages!");
     console.log("Press Ctrl+C to stop the bot");
 
     // Graceful stop

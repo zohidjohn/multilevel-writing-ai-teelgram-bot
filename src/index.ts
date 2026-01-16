@@ -121,29 +121,47 @@ bot.on("callback_query", handleCallbackQuery);
 
 // Handle text messages based on current menu state
 bot.on("text", async (ctx) => {
-  if (!ctx.session || !ctx.message || !("text" in ctx.message)) return;
+  console.log("[DEBUG] Text message received");
+  console.log("[DEBUG] Session exists:", !!ctx.session);
+  console.log("[DEBUG] Message exists:", !!ctx.message);
+  console.log("[DEBUG] Is text message:", ctx.message && "text" in ctx.message);
+
+  if (!ctx.session || !ctx.message || !("text" in ctx.message)) {
+    console.log("[DEBUG] Early return: missing session or message");
+    return;
+  }
 
   const text = ctx.message.text.trim();
+  console.log("[DEBUG] Message text:", JSON.stringify(text));
+  console.log("[DEBUG] Current menu:", ctx.session.currentMenu);
+  console.log("[DEBUG] Is authenticated:", ctx.session.isAuthenticated);
 
   // Ignore commands
   if (text.startsWith("/")) {
+    console.log("[DEBUG] Ignoring command");
     return;
   }
 
   // Handle based on current menu
+  console.log("[DEBUG] Processing message for menu:", ctx.session.currentMenu);
   switch (ctx.session.currentMenu) {
     case "addStudent":
+      console.log("[DEBUG] Routing to handleAddStudent");
       await handleAddStudent(ctx, text);
       break;
     case "editStudent":
+      console.log("[DEBUG] Routing to handleEditStudent");
       await handleEditStudent(ctx, text);
       break;
     case "deleteStudent":
+      console.log("[DEBUG] Routing to handleDeleteStudent");
       await handleDeleteStudent(ctx, text);
       break;
     default:
+      console.log("[DEBUG] No specific menu, default case");
       // If authenticated but no specific menu, show main menu
       if (ctx.session.isAuthenticated) {
+        console.log("[DEBUG] Showing main menu");
         await showMainMenu(ctx);
       }
       break;

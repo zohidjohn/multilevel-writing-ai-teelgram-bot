@@ -11,12 +11,22 @@ import {
 import { editOrReplaceMessage, escapeMarkdown } from "./utils.js";
 
 export async function handleAddStudent(ctx: BotContext, text: string) {
-  if (!ctx.session) return;
+  console.log("[DEBUG] handleAddStudent called");
+  console.log("[DEBUG] Raw text received:", JSON.stringify(text));
+  console.log("[DEBUG] Session exists:", !!ctx.session);
+  console.log("[DEBUG] Current menu:", ctx.session?.currentMenu);
+
+  if (!ctx.session) {
+    console.log("[DEBUG] No session, returning early");
+    return;
+  }
 
   // Delete the user's message
   try {
     await ctx.deleteMessage();
+    console.log("[DEBUG] User message deleted successfully");
   } catch (error) {
+    console.log("[DEBUG] Failed to delete user message:", error);
     // Ignore if message can't be deleted
   }
 
@@ -25,7 +35,11 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
     .map((email) => email.trim())
     .filter((email) => email.length > 0);
 
+  console.log("[DEBUG] Parsed emails:", JSON.stringify(emails));
+  console.log("[DEBUG] Number of emails:", emails.length);
+
   if (emails.length === 0) {
+    console.log("[DEBUG] No valid emails found, showing error");
     await editOrReplaceMessage(
       ctx,
       "❌ No valid emails provided. Please try again."
@@ -35,7 +49,14 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
   }
 
   try {
+    console.log("[DEBUG] Calling addStudents with emails:", JSON.stringify(emails));
     const result = await addStudents(emails);
+    console.log("[DEBUG] addStudents result:", {
+      successCount: result.success.length,
+      errorCount: result.errors.length,
+      success: result.success.map(s => s.email),
+      errors: result.errors
+    });
 
     let responseText = "✅ *Student\\(s\\) Added*\n\n";
 
@@ -53,13 +74,21 @@ export async function handleAddStudent(ctx: BotContext, text: string) {
       });
     }
 
+    console.log("[DEBUG] Response text prepared:", responseText.substring(0, 100) + "...");
+    console.log("[DEBUG] Sending success message");
+    
     // Show success message briefly, then show student list
     await editOrReplaceMessage(ctx, responseText);
     await new Promise((resolve) => setTimeout(resolve, 500));
+    console.log("[DEBUG] Showing student list");
     await showStudentList(ctx);
+    console.log("[DEBUG] handleAddStudent completed successfully");
   } catch (error) {
+    console.error("[DEBUG] Error in handleAddStudent:", error);
+    console.error("[DEBUG] Error stack:", error instanceof Error ? error.stack : "No stack");
     const errorMessage =
       error instanceof Error ? error.message : "Failed to add students";
+    console.log("[DEBUG] Sending error message to user");
     await editOrReplaceMessage(
       ctx,
       `❌ Error: ${escapeMarkdown(errorMessage)}`

@@ -33,14 +33,19 @@ export async function getAllStudents(): Promise<AllowedUser[]> {
 }
 
 export async function addStudent(email: string): Promise<AllowedUser> {
+  console.log("[DEBUG] addStudent called with:", email);
   const trimmedEmail = email.trim().toLowerCase();
+  console.log("[DEBUG] Trimmed email:", trimmedEmail);
 
   // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(trimmedEmail)) {
+    console.log("[DEBUG] Email validation failed for:", trimmedEmail);
     throw new Error(`Invalid email format: ${email}`);
   }
+  console.log("[DEBUG] Email validation passed");
 
+  console.log("[DEBUG] Inserting into database...");
   const { data, error } = await supabase
     .from("allowed_users")
     .insert([{ email: trimmedEmail }])
@@ -48,31 +53,40 @@ export async function addStudent(email: string): Promise<AllowedUser> {
     .single();
 
   if (error) {
+    console.log("[DEBUG] Database error:", error.code, error.message);
     if (error.code === "23505") {
       throw new Error(`Student with email ${trimmedEmail} already exists`);
     }
     throw new Error(`Failed to add student: ${error.message}`);
   }
 
+  console.log("[DEBUG] Student added successfully:", data?.email);
   return data;
 }
 
 export async function addStudents(
   emails: string[]
 ): Promise<{ success: AllowedUser[]; errors: string[] }> {
+  console.log("[DEBUG] addStudents called with:", JSON.stringify(emails));
   const results = { success: [] as AllowedUser[], errors: [] as string[] };
 
   for (const email of emails) {
+    console.log("[DEBUG] Processing email:", email);
     try {
       const student = await addStudent(email);
+      console.log("[DEBUG] Successfully added student:", student.email);
       results.success.push(student);
     } catch (error) {
-      results.errors.push(
-        error instanceof Error ? error.message : String(error)
-      );
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.log("[DEBUG] Error adding student:", email, errorMsg);
+      results.errors.push(errorMsg);
     }
   }
 
+  console.log("[DEBUG] addStudents completed:", {
+    successCount: results.success.length,
+    errorCount: results.errors.length
+  });
   return results;
 }
 

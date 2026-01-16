@@ -105,7 +105,9 @@ export async function showDeleteStudentPrompt(ctx: BotContext) {
 }
 
 export async function showNewEmailPrompt(ctx: BotContext, oldEmail: string) {
-  const text = `✏️ *Edit Student*\n\nCurrent email: \`${escapeMarkdown(oldEmail)}\`\n\nEnter the new email address:\n\nType /cancel to cancel.`;
+  const text = `✏️ *Edit Student*\n\nCurrent email: \`${escapeMarkdown(
+    oldEmail
+  )}\`\n\nEnter the new email address:\n\nType /cancel to cancel.`;
 
   const keyboard = Markup.inlineKeyboard([
     [Markup.button.callback("🔙 Back", "student_list")],
